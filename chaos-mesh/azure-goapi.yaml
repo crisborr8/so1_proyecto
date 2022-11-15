@@ -1,0 +1,21 @@
+kind: Schedule
+apiVersion: chaos-mesh.org/v1alpha1
+metadata:
+  namespace: usactar
+  name: s-pod-kill-gokafka-test1
+spec:
+  schedule: '@every 15s'
+  startingDeadlineSeconds: null
+  concurrencyPolicy: Allow
+  historyLimit: 2
+  type: PodChaos
+  podChaos:
+    selector:
+      namespaces:
+        - usactar
+      labelSelectors:
+        run: goapikafka
+    mode: all
+    action: pod-kill
+    gracePeriod: 0
+

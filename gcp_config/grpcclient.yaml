@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grpcclient
+  namespace: usactar
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grpcclient
+  template:
+    metadata:
+      labels:
+        app: grpcclient
+    spec:
+      nodeSelector:
+        "kubernetes.io/os": linux
+      containers:
+      - name: grpcclient
+        image: damc502/so1_grpc_client:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+        env:
+        - name: KAFKA
+          value: "kafka-service"
+        - name: GRPC
+          value: "grpcserver-cluster-azure"
+        - name: MONGO
+          value : "mongodb://grupo1-24116:wdwRmVBfjIi20O25lCJAJaHqaQiDkjKgGyk2HW6GEqxBioEPmonYc7yhA4rjoziu8NDLdjF3k1ctACDbo7oubw==@grupo1-24116.mongo.cosmos.azure.com:10255/?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@grupo1-24116@"

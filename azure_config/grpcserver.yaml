@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grpcserver
+  namespace: usactar
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grpcserver
+  template:
+    metadata:
+      labels:
+        app: grpcserver
+    spec:
+      nodeSelector:
+        "kubernetes.io/os": linux
+      containers:
+      - name: grpcserver
+        image: damc502/so1_grpc_server:latest
+        env:
+        - name: REDIS
+          value: "redis"
+        ports:
+        - containerPort: 50051
+          name: grpcserver

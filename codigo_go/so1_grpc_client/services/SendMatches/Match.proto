@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option go_package = "services.matchpb";
+
+message Match {
+    string team1 = 1;
+    string team2 = 2;
+    string score = 3;
+    sint32 phase = 4;
+}
+message Confirm {
+    bool error = 1;
+}
+
+service SendMatches {
+    rpc SendMatch (Match) returns (Confirm) {};
+}
+
+// protoc --go_out=GoOutput --go-grpc_out=GoOutput --proto_path=services /
+// --go_opt=paths=source_relative --go-grpc_opt=paths=source_relative SendMatches/Match.proto

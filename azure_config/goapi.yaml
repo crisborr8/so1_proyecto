@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: goapi
+  namespace: usactar
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: goapi
+  template:
+    metadata:
+      labels:
+        app: goapi
+    spec:
+      nodeSelector:
+        "kubernetes.io/os": linux
+      containers:
+      - name: goapi
+        image: damc502/so1_redis_mongo:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        env:
+        - name: REDIS
+          value: "redis"
+        - name: MONGO
+          value : "mongodb://grupo1-24116:wdwRmVBfjIi20O25lCJAJaHqaQiDkjKgGyk2HW6GEqxBioEPmonYc7yhA4rjoziu8NDLdjF3k1ctACDbo7oubw==@grupo1-24116.mongo.cosmos.azure.com:10255/?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@grupo1-24116@"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: goapi
+  namespace: usactar
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8080
+  selector:
+    app: goapi
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: basic-ingress
+  namespace: usactar
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: "20.85.154.231.nip.io"
+    http:
+      paths:
+      - path: /output(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: goapi
+            port:
+              number: 8080

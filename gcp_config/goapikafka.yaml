@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: goapikafka
+  namespace: usactar
+spec:
+  selector:
+    matchLabels:
+      run: goapikafka
+  template:
+    metadata:
+      labels:
+        run: goapikafka
+    spec:
+      containers:
+      - image: damc502/so1_kafka_api:latest
+      ##- image: us-docker.pkg.dev/google-samples/containers/gke/hello-app:1.0
+        imagePullPolicy: Always
+        name: goapikafka
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        env:
+        - name: KAFKA
+          value: "kafka-service"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: goapikafka
+  namespace: usactar
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    run: goapikafka
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: basic-ingress
+  namespace: usactar
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: 34.121.193.86.nip.io
+    http:
+      paths:
+      - path: /input(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: goapikafka
+            port:
+              number: 8080

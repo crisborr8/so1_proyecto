@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb
+  namespace: usactar
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      containers:
+        - image: mcr.microsoft.com/mslearn/samples/contoso-ship-manager:backend
+          name: mongodb
+          ports:
+            - containerPort: 27017
+              name: http
+          env:
+            - name: DATABASE_MONGODB_URI
+              value: "mongodb://grupo1-24116:wdwRmVBfjIi20O25lCJAJaHqaQiDkjKgGyk2HW6GEqxBioEPmonYc7yhA4rjoziu8NDLdjF3k1ctACDbo7oubw==@grupo1-24116.mongo.cosmos.azure.com:10255/?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@grupo1-24116@"
+            - name: DATABASE_MONGODB_DBNAME
+              value: azureDB
